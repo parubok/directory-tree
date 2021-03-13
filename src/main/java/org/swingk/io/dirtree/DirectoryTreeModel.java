@@ -9,6 +9,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.DosFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -70,7 +71,15 @@ public class DirectoryTreeModel implements TreeModel {
     }
 
     private static DirectoryStream<Path> newDirectoryStream(Path dir) throws IOException {
-        return Files.newDirectoryStream(dir, Files::isDirectory);
+        return Files.newDirectoryStream(dir, path -> {
+            DosFileAttributes attrs;
+            try {
+                attrs = Files.readAttributes(path, DosFileAttributes.class);
+            } catch (IOException ex) {
+                return false;
+            }
+            return attrs.isDirectory() && !attrs.isHidden() && !attrs.isSystem();
+        });
     }
 
     private void ensurePopulated(DirectoryNode node) {
