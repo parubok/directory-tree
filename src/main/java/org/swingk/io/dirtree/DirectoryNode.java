@@ -3,6 +3,7 @@ package org.swingk.io.dirtree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
+import java.util.Objects;
 
 public class DirectoryNode extends DefaultMutableTreeNode {
 
@@ -24,7 +25,7 @@ public class DirectoryNode extends DefaultMutableTreeNode {
 
     public DirectoryNode(FileSystem fileSystem) {
         super();
-        this.fileSystem = fileSystem;
+        this.fileSystem = Objects.requireNonNull(fileSystem);
         this.directory = null;
         this.str = "Computer"; // getFileSystem().toString();
     }
@@ -32,7 +33,7 @@ public class DirectoryNode extends DefaultMutableTreeNode {
     public DirectoryNode(Path directory) {
         super();
         this.fileSystem = null;
-        this.directory = directory;
+        this.directory = Objects.requireNonNull(directory);
         this.str = getName(getDirectory());
     }
 

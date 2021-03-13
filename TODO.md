@@ -1,3 +1,4 @@
+- node factory
 - builder (filter, comparator, etc)
 - concurrency
 - immutable nodes
