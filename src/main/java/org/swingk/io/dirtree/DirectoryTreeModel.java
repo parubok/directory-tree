@@ -27,17 +27,20 @@ public class DirectoryTreeModel implements TreeModel {
     // private static final Executor executor = Executors.newSingleThreadExecutor();
 
     private final DirectoryNode root;
+    private final boolean showHidden;
+    private final boolean showSystem;
     private final Comparator<Path> pathComparator;
     private final Map<DirectoryNode, Boolean> leafStatus = new ConcurrentHashMap<>();
     private final Set<DirectoryNode> populated = ConcurrentHashMap.newKeySet();
 
     public DirectoryTreeModel() {
-        this(NAME_COMPARATOR);
+        this(NAME_COMPARATOR, false, false);
     }
 
-    public DirectoryTreeModel(Comparator<Path> pathComparator) {
+    public DirectoryTreeModel(Comparator<Path> pathComparator, boolean showHidden, boolean showSystem) {
         this.pathComparator = Objects.requireNonNull(pathComparator);
-
+        this.showHidden = showHidden;
+        this.showSystem = showSystem;
         this.root = new DirectoryNode();
 
         final FileSystem fs = FileSystems.getDefault();
@@ -70,7 +73,7 @@ public class DirectoryTreeModel implements TreeModel {
         return dirNode.getChildAt(index);
     }
 
-    private static DirectoryStream<Path> newDirectoryStream(Path dir) throws IOException {
+    private DirectoryStream<Path> newDirectoryStream(Path dir) throws IOException {
         return Files.newDirectoryStream(dir, path -> {
             DosFileAttributes attrs;
             try {
@@ -78,7 +81,7 @@ public class DirectoryTreeModel implements TreeModel {
             } catch (IOException ex) {
                 return false;
             }
-            return attrs.isDirectory() && !attrs.isHidden() && !attrs.isSystem();
+            return attrs.isDirectory() && (showHidden || !attrs.isHidden()) && (showSystem || !attrs.isSystem());
         });
     }
 
@@ -109,7 +112,7 @@ public class DirectoryTreeModel implements TreeModel {
         return dirNode.getChildCount();
     }
 
-    private static boolean computeLeafStatus(DirectoryNode node) {
+    private boolean computeLeafStatus(DirectoryNode node) {
         boolean leaf;
         try (DirectoryStream<Path> dirStream = newDirectoryStream(node.getDirectory())) {
             leaf = !dirStream.iterator().hasNext();
@@ -122,7 +125,7 @@ public class DirectoryTreeModel implements TreeModel {
     @Override
     public boolean isLeaf(Object node) {
         DirectoryNode dirNode = (DirectoryNode) node;
-        return leafStatus.computeIfAbsent(dirNode, DirectoryTreeModel::computeLeafStatus);
+        return leafStatus.computeIfAbsent(dirNode, this::computeLeafStatus);
     }
 
     @Override
@@ -145,5 +148,13 @@ public class DirectoryTreeModel implements TreeModel {
     @Override
     public void removeTreeModelListener(TreeModelListener l) {
 
+    }
+
+    public boolean isShowHidden() {
+        return showHidden;
+    }
+
+    public boolean isShowSystem() {
+        return showSystem;
     }
 }
