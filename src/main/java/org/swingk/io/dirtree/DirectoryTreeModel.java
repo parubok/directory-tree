@@ -19,12 +19,54 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Tree model populated with a hierarchy of directories in the local filesystem.
+ * Instances of the model may be created via public constructor or via builder.
+ * <p>
+ * All nodes of the model are instances of {@link DirectoryNode}.
+ *
+ * @implNote The model is populated incrementally, as the user expands the tree nodes.
+ * @see DirectoryNodeFactory
+ */
 public class DirectoryTreeModel implements TreeModel {
 
     public static final Comparator<Path> NAME_COMPARATOR = Comparator
             .comparing(path -> DirectoryNode.getName(path).toLowerCase());
 
-    // private static final Executor executor = Executors.newSingleThreadExecutor();
+    public static class Builder {
+        private DirectoryNodeFactory nodeFactory = new DefaultNodeFactory();
+        private Comparator<Path> pathComparator = NAME_COMPARATOR;
+        private boolean showHidden;
+        private boolean showSystem;
+
+        public Builder setNodeFactory(DirectoryNodeFactory nodeFactory) {
+            this.nodeFactory = Objects.requireNonNull(nodeFactory);
+            return this;
+        }
+
+        public Builder setPathComparator(Comparator<Path> pathComparator) {
+            this.pathComparator = Objects.requireNonNull(pathComparator);
+            return this;
+        }
+
+        public Builder setShowHidden(boolean showHidden) {
+            this.showHidden = showHidden;
+            return this;
+        }
+
+        public Builder setShowSystem(boolean showSystem) {
+            this.showSystem = showSystem;
+            return this;
+        }
+
+        public DirectoryTreeModel build() {
+            return new DirectoryTreeModel(pathComparator, showHidden, showSystem, nodeFactory);
+        }
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
 
     private final DirectoryNodeFactory nodeFactory;
     private final DirectoryNode root;
@@ -34,33 +76,25 @@ public class DirectoryTreeModel implements TreeModel {
     private final Map<DirectoryNode, Boolean> leafStatus = new ConcurrentHashMap<>();
     private final Set<DirectoryNode> populated = ConcurrentHashMap.newKeySet();
 
-    public DirectoryTreeModel() {
-        this(NAME_COMPARATOR, false, false, new DefaultNodeFactory());
-    }
-
     public DirectoryTreeModel(Comparator<Path> pathComparator, boolean showHidden, boolean showSystem,
                               DirectoryNodeFactory nodeFactory) {
-        this.nodeFactory = Objects.requireNonNull(nodeFactory);
-        this.pathComparator = Objects.requireNonNull(pathComparator);
+        this.nodeFactory = nodeFactory;
+        this.pathComparator = pathComparator;
         this.showHidden = showHidden;
         this.showSystem = showSystem;
-        this.root = Objects.requireNonNull(nodeFactory.createRootNode());
+        this.root = nodeFactory.createRootNode();
 
         FileSystem fs = FileSystems.getDefault();
         var fsNode = nodeFactory.createFileSystemNode(fs);
         root.add(fsNode);
         var rootDirs = new ArrayList<Path>();
         fs.getRootDirectories().forEach(rootDirs::add);
-        rootDirs.sort(getPathComparator());
+        rootDirs.sort(pathComparator);
         rootDirs.forEach(rootDir -> fsNode.add(nodeFactory.createDirectoryNode(rootDir)));
         leafStatus.put(root, Boolean.FALSE);
         populated.add(root);
         leafStatus.put(fsNode, rootDirs.isEmpty());
         populated.add(fsNode);
-    }
-
-    public Comparator<Path> getPathComparator() {
-        return pathComparator;
     }
 
     @Override
@@ -83,7 +117,7 @@ public class DirectoryTreeModel implements TreeModel {
             } catch (IOException ex) {
                 return false;
             }
-            return attrs.isDirectory() && (isShowHidden() || !attrs.isHidden()) && (isShowSystem() || !attrs.isSystem());
+            return attrs.isDirectory() && (showHidden || !attrs.isHidden()) && (showSystem || !attrs.isSystem());
         });
     }
 
@@ -150,13 +184,5 @@ public class DirectoryTreeModel implements TreeModel {
     @Override
     public void removeTreeModelListener(TreeModelListener l) {
 
-    }
-
-    public boolean isShowHidden() {
-        return showHidden;
-    }
-
-    public boolean isShowSystem() {
-        return showSystem;
     }
 }

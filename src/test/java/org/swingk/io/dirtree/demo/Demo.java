@@ -17,7 +17,7 @@ public class Demo {
         contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         JTree tree = new JTree();
-        tree.setModel(new DirectoryTreeModel());
+        tree.setModel(DirectoryTreeModel.builder().build());
         JScrollPane sp = new JScrollPane();
         sp.setViewportView(tree);
         contentPanel.add(sp, BorderLayout.CENTER);
