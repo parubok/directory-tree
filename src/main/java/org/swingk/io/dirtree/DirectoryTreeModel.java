@@ -26,6 +26,7 @@ public class DirectoryTreeModel implements TreeModel {
 
     // private static final Executor executor = Executors.newSingleThreadExecutor();
 
+    private final DirectoryNodeFactory nodeFactory;
     private final DirectoryNode root;
     private final boolean showHidden;
     private final boolean showSystem;
@@ -34,25 +35,29 @@ public class DirectoryTreeModel implements TreeModel {
     private final Set<DirectoryNode> populated = ConcurrentHashMap.newKeySet();
 
     public DirectoryTreeModel() {
-        this(NAME_COMPARATOR, false, false);
+        this(NAME_COMPARATOR, false, false, new DefaultNodeFactory());
     }
 
-    public DirectoryTreeModel(Comparator<Path> pathComparator, boolean showHidden, boolean showSystem) {
+    public DirectoryTreeModel(Comparator<Path> pathComparator, boolean showHidden, boolean showSystem,
+                              DirectoryNodeFactory nodeFactory) {
+        this.nodeFactory = Objects.requireNonNull(nodeFactory);
         this.pathComparator = Objects.requireNonNull(pathComparator);
         this.showHidden = showHidden;
         this.showSystem = showSystem;
-        this.root = new DirectoryNode();
+        this.root = Objects.requireNonNull(nodeFactory.createRootNode());
+        init();
+    }
 
-        final FileSystem fs = FileSystems.getDefault();
-        var fsNode = new DirectoryNode(fs);
-        this.root.add(fsNode);
-
+    private void init() {
+        FileSystem fs = FileSystems.getDefault();
+        var fsNode = nodeFactory.createFileSystemNode(fs);
+        root.add(fsNode);
         var rootDirs = new ArrayList<Path>();
         fs.getRootDirectories().forEach(rootDirs::add);
         rootDirs.sort(getPathComparator());
-        rootDirs.forEach(rootDir -> fsNode.add(new DirectoryNode(rootDir)));
-        leafStatus.put(this.root, Boolean.FALSE);
-        populated.add(this.root);
+        rootDirs.forEach(rootDir -> fsNode.add(nodeFactory.createDirectoryNode(rootDir)));
+        leafStatus.put(root, Boolean.FALSE);
+        populated.add(root);
         leafStatus.put(fsNode, rootDirs.isEmpty());
         populated.add(fsNode);
     }
@@ -81,7 +86,7 @@ public class DirectoryTreeModel implements TreeModel {
             } catch (IOException ex) {
                 return false;
             }
-            return attrs.isDirectory() && (showHidden || !attrs.isHidden()) && (showSystem || !attrs.isSystem());
+            return attrs.isDirectory() && (isShowHidden() || !attrs.isHidden()) && (isShowSystem() || !attrs.isSystem());
         });
     }
 
@@ -97,7 +102,7 @@ public class DirectoryTreeModel implements TreeModel {
                 children = Collections.emptyList();
             }
             leafStatus.put(node, children.isEmpty());
-            children.forEach(c -> node.add(new DirectoryNode(c)));
+            children.forEach(childPath -> node.add(nodeFactory.createDirectoryNode(childPath)));
             populated.add(node);
         }
     }
