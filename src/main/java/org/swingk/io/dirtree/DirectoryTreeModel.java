@@ -69,11 +69,15 @@ public class DirectoryTreeModel implements TreeModel {
         return dirNode.getChildAt(index);
     }
 
+    private static DirectoryStream<Path> newDirectoryStream(Path dir) throws IOException {
+        return Files.newDirectoryStream(dir, Files::isDirectory);
+    }
+
     private void ensurePopulated(DirectoryNode node) {
         if (!populated.contains(node)) {
             Path dir = node.getDirectory();
             List<Path> children;
-            try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir, Files::isDirectory)) {
+            try (DirectoryStream<Path> dirStream = newDirectoryStream(dir)) {
                 children = new ArrayList<>();
                 dirStream.forEach(children::add);
                 children.sort(pathComparator);
@@ -98,7 +102,7 @@ public class DirectoryTreeModel implements TreeModel {
 
     private static boolean computeLeafStatus(DirectoryNode node) {
         boolean leaf;
-        try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(node.getDirectory(), Files::isDirectory)) {
+        try (DirectoryStream<Path> dirStream = newDirectoryStream(node.getDirectory())) {
             leaf = !dirStream.iterator().hasNext();
         } catch (IOException e) {
             leaf = true;
