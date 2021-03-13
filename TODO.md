@@ -1,0 +1,7 @@
+- builder (filter, comparator, etc)
+- concurrency
+- immutable nodes
+- time-based cache
+- logging
+- error reporting
+- icons
