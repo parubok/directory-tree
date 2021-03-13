@@ -6,6 +6,8 @@
 The goal of this project is to provide an efficient and convenient implementation of Java Swing JTree model with
 a hierarchy of filesystem directories (e.g. for directory chooser component).
 
+A demo application is provided. See `org.swingk.io.dirtree.demo.Demo`.
+
 This library is packaged as a Java 9 module `org.swingk.io.dirtree` (with a single dependency on a system module `java.desktop`).
 
 This project has no dependencies (except JUnit 5, for testing).
