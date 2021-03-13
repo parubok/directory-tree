@@ -9,8 +9,7 @@
   <version>1.0-SNAPSHOT</version>
 
   <name>directory-tree</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+  <url>https://github.com/parubok/directory-tree</url>
 
   <licenses>
     <license>
@@ -24,6 +23,13 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+
+  <scm>
+    <connection>scm:git:git@github.com:parubok/directory-tree</connection>
+    <url>scm:git:git@github.com:parubok/directory-tree</url>
+    <developerConnection>scm:git:git@github.com:parubok/directory-tree</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
 
   <dependencies>
     <dependency>
