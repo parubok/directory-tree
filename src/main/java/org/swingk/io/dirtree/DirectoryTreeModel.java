@@ -45,10 +45,7 @@ public class DirectoryTreeModel implements TreeModel {
         this.showHidden = showHidden;
         this.showSystem = showSystem;
         this.root = Objects.requireNonNull(nodeFactory.createRootNode());
-        init();
-    }
 
-    private void init() {
         FileSystem fs = FileSystems.getDefault();
         var fsNode = nodeFactory.createFileSystemNode(fs);
         root.add(fsNode);
