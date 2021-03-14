@@ -118,6 +118,10 @@ public class DirectoryTreeModel implements TreeModel {
         return root.getChildAt(0);
     }
 
+    public List<DirectoryNode> getFileSystemRootNodes() {
+        return getFileSystemNode().getChildren();
+    }
+
     private static List<Path> getAllParents(Path directory) {
         List<Path> parents = new ArrayList<>();
         Path parent = directory;

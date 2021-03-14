@@ -3,6 +3,9 @@ package org.swingk.io.dirtree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 public class DirectoryNode extends DefaultMutableTreeNode {
@@ -35,6 +38,18 @@ public class DirectoryNode extends DefaultMutableTreeNode {
         this.fileSystem = null;
         this.directory = Objects.requireNonNull(directory);
         this.str = getName(getDirectory());
+    }
+
+    public List<DirectoryNode> getChildren() {
+        final int c = getChildCount();
+        if (c == 0) {
+            return Collections.emptyList();
+        }
+        var list = new ArrayList<DirectoryNode>(c);
+        for (int i = 0; i < c; i++) {
+            list.add(getChildAt(i));
+        }
+        return list;
     }
 
     /**

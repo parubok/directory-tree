@@ -1,5 +1,3 @@
-- builder (filter, comparator, etc)
-- concurrency
 - immutable nodes
 - logging
 - error reporting
