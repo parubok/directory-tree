@@ -109,12 +109,15 @@ public class DirectoryTreeModel implements TreeModel {
     }
 
     /**
-     * @param directory Local filesystem directory. Not null.
+     * @param directory Local filesystem directory. Must be absolute as specified by {@link Path#isAbsolute()}.
      * @return {@link Optional} with the tree path of the specified directory or empty {@link Optional} if the
      * directory is not in the model (e.g. doesn't exist, doesn't pass the filter, etc.).
      */
     public Optional<TreePath> getTreePath(Path directory) {
         Objects.requireNonNull(directory);
+        if (!directory.isAbsolute()) {
+            throw new IllegalArgumentException("The directory path must be absolute.");
+        }
         try {
             if (!filter.accept(directory)) {
                 return Optional.empty();
