@@ -31,6 +31,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DirectoryTreeModel implements TreeModel {
 
+    /**
+     * Default comparator - compares directory names in case insensitive fashion.
+     */
     public static final Comparator<Path> NAME_COMPARATOR = Comparator
             .comparing(path -> DirectoryNode.getName(path).toLowerCase());
 
@@ -65,6 +68,9 @@ public class DirectoryTreeModel implements TreeModel {
         }
     }
 
+    /**
+     * @return New builder to build instance of {@link DirectoryTreeModel}.
+     */
     public static Builder builder() {
         return new Builder();
     }
