@@ -16,6 +16,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -70,8 +71,7 @@ public class DirectoryTreeModel implements TreeModel {
 
     private final DirectoryNodeFactory nodeFactory;
     private final DirectoryNode root;
-    private final boolean showHidden;
-    private final boolean showSystem;
+    private final DirectoryStream.Filter<Path> filter;
     private final Comparator<Path> pathComparator;
     private final Map<DirectoryNode, Boolean> leafStatus = new ConcurrentHashMap<>();
     private final Set<DirectoryNode> populated = ConcurrentHashMap.newKeySet();
@@ -80,9 +80,20 @@ public class DirectoryTreeModel implements TreeModel {
                               DirectoryNodeFactory nodeFactory) {
         this.nodeFactory = nodeFactory;
         this.pathComparator = pathComparator;
-        this.showHidden = showHidden;
-        this.showSystem = showSystem;
         this.root = nodeFactory.createRootNode();
+
+        this.filter = path -> {
+            if (path.getNameCount() == 0) {
+                return true; // root always passes the filter
+            }
+            DosFileAttributes attrs;
+            try {
+                attrs = Files.readAttributes(path, DosFileAttributes.class);
+            } catch (IOException ex) {
+                return false;
+            }
+            return attrs.isDirectory() && (showHidden || !attrs.isHidden()) && (showSystem || !attrs.isSystem());
+        };
 
         FileSystem fs = FileSystems.getDefault();
         var fsNode = nodeFactory.createFileSystemNode(fs);
@@ -95,6 +106,55 @@ public class DirectoryTreeModel implements TreeModel {
         populated.add(root);
         leafStatus.put(fsNode, rootDirs.isEmpty());
         populated.add(fsNode);
+    }
+
+    /**
+     * @param directory Local filesystem directory. Not null.
+     * @return {@link Optional} with the tree path of the specified directory or empty {@link Optional} if the
+     * directory is not in the model (e.g. doesn't exist, doesn't pass the filter, etc.).
+     */
+    public Optional<TreePath> getTreePath(Path directory) {
+        Objects.requireNonNull(directory);
+        try {
+            if (!filter.accept(directory)) {
+                return Optional.empty();
+            }
+        } catch (IOException e) {
+            return Optional.empty();
+        }
+
+        List<Path> parents = new ArrayList<>();
+        Path parent = directory;
+        while (parent != null) {
+            parents.add(parent);
+            parent = parent.getParent();
+        }
+        Collections.reverse(parents); // so the root is first
+
+        DirectoryNode currentNode = root.getChildAt(0);
+        assert currentNode.getFileSystem() != null; // start with filesystem node
+        final int size = parents.size();
+        List<DirectoryNode> treePathNodes = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            DirectoryNode node = null;
+            for (int j = 0; j < currentNode.getChildCount(); j++) {
+                DirectoryNode childNode = currentNode.getChildAt(j);
+                if (childNode.getDirectory().equals(parents.get(i))) {
+                    node = childNode;
+                    break;
+                }
+            }
+            if (node == null) {
+                return Optional.empty();
+            }
+            treePathNodes.add(node);
+            if (i == (size - 1)) {
+                return Optional.of(new TreePath(treePathNodes.toArray()));
+            }
+            ensurePopulated(node);
+            currentNode = node;
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -110,15 +170,7 @@ public class DirectoryTreeModel implements TreeModel {
     }
 
     private DirectoryStream<Path> newDirectoryStream(Path dir) throws IOException {
-        return Files.newDirectoryStream(dir, path -> {
-            DosFileAttributes attrs;
-            try {
-                attrs = Files.readAttributes(path, DosFileAttributes.class);
-            } catch (IOException ex) {
-                return false;
-            }
-            return attrs.isDirectory() && (showHidden || !attrs.isHidden()) && (showSystem || !attrs.isSystem());
-        });
+        return Files.newDirectoryStream(dir, filter);
     }
 
     private void ensurePopulated(DirectoryNode node) {
