@@ -37,10 +37,16 @@ public class DirectoryNode extends DefaultMutableTreeNode {
         this.str = getName(getDirectory());
     }
 
+    /**
+     * @return {@code null} for root or directory nodes.
+     */
     public FileSystem getFileSystem() {
         return fileSystem;
     }
 
+    /**
+     * @return {@code null} for root or file system nodes.
+     */
     public Path getDirectory() {
         return directory;
     }
