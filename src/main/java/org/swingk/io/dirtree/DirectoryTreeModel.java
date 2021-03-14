@@ -108,6 +108,17 @@ public class DirectoryTreeModel implements TreeModel {
         populated.add(fsNode);
     }
 
+    private static List<Path> getAllParents(Path directory) {
+        List<Path> parents = new ArrayList<>();
+        Path parent = directory;
+        while (parent != null) {
+            parents.add(parent);
+            parent = parent.getParent();
+        }
+        Collections.reverse(parents); // so the root is first
+        return parents;
+    }
+
     /**
      * @param directory Local filesystem directory. Must be absolute as specified by {@link Path#isAbsolute()}.
      * @return {@link Optional} with the tree path of the specified directory or empty {@link Optional} if the
@@ -125,20 +136,15 @@ public class DirectoryTreeModel implements TreeModel {
         } catch (IOException e) {
             return Optional.empty();
         }
-
-        List<Path> parents = new ArrayList<>();
-        Path parent = directory;
-        while (parent != null) {
-            parents.add(parent);
-            parent = parent.getParent();
-        }
-        Collections.reverse(parents); // so the root is first
-
-        final DirectoryNode fileSystemNode = root.getChildAt(0);
-        DirectoryNode currentNode = fileSystemNode;
-        assert currentNode.getFileSystem() != null; // start with filesystem node
+        final List<Path> parents = getAllParents(directory);
         final int size = parents.size();
-        List<DirectoryNode> treePathNodes = new ArrayList<>(size);
+        assert root.getChildCount() == 1; // only one filesystem
+        final DirectoryNode fileSystemNode = root.getChildAt(0);
+        assert fileSystemNode.getFileSystem() != null;
+        DirectoryNode currentNode = fileSystemNode;  // start with filesystem node
+        List<DirectoryNode> treePathNodes = new ArrayList<>(size + 2);
+        treePathNodes.add(root);
+        treePathNodes.add(fileSystemNode);
         for (int i = 0; i < size; i++) {
             DirectoryNode node = null;
             for (int j = 0; j < currentNode.getChildCount(); j++) {
@@ -153,8 +159,6 @@ public class DirectoryTreeModel implements TreeModel {
             }
             treePathNodes.add(node);
             if (i == (size - 1)) {
-                treePathNodes.add(0, fileSystemNode);
-                treePathNodes.add(0, root);
                 return Optional.of(new TreePath(treePathNodes.toArray()));
             }
             ensurePopulated(node);
