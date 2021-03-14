@@ -114,6 +114,10 @@ public class DirectoryTreeModel implements TreeModel {
         populated.add(fsNode);
     }
 
+    public DirectoryNode getFileSystemNode() {
+        return root.getChildAt(0);
+    }
+
     private static List<Path> getAllParents(Path directory) {
         List<Path> parents = new ArrayList<>();
         Path parent = directory;
@@ -144,13 +148,10 @@ public class DirectoryTreeModel implements TreeModel {
         }
         final List<Path> parents = getAllParents(directory);
         final int size = parents.size();
-        assert root.getChildCount() == 1; // only one filesystem
-        final DirectoryNode fileSystemNode = root.getChildAt(0);
-        assert fileSystemNode.getFileSystem() != null;
-        DirectoryNode currentNode = fileSystemNode;  // start with filesystem node
         List<DirectoryNode> treePathNodes = new ArrayList<>(size + 2);
-        treePathNodes.add(root);
-        treePathNodes.add(fileSystemNode);
+        treePathNodes.add(getRoot());
+        treePathNodes.add(getFileSystemNode());
+        DirectoryNode currentNode = getFileSystemNode();  // start with filesystem node
         for (int i = 0; i < size; i++) {
             DirectoryNode node = null;
             for (int j = 0; j < currentNode.getChildCount(); j++) {
