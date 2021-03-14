@@ -134,7 +134,8 @@ public class DirectoryTreeModel implements TreeModel {
         }
         Collections.reverse(parents); // so the root is first
 
-        DirectoryNode currentNode = root.getChildAt(0);
+        final DirectoryNode fileSystemNode = root.getChildAt(0);
+        DirectoryNode currentNode = fileSystemNode;
         assert currentNode.getFileSystem() != null; // start with filesystem node
         final int size = parents.size();
         List<DirectoryNode> treePathNodes = new ArrayList<>(size);
@@ -152,6 +153,8 @@ public class DirectoryTreeModel implements TreeModel {
             }
             treePathNodes.add(node);
             if (i == (size - 1)) {
+                treePathNodes.add(0, fileSystemNode);
+                treePathNodes.add(0, root);
                 return Optional.of(new TreePath(treePathNodes.toArray()));
             }
             ensurePopulated(node);
