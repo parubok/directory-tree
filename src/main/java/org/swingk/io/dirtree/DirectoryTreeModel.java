@@ -90,7 +90,7 @@ public class DirectoryTreeModel implements TreeModel {
 
         this.filter = path -> {
             if (path.getNameCount() == 0) {
-                return true; // root always passes the filter
+                return true; // filesystem root always passes the filter
             }
             DosFileAttributes attrs;
             try {
