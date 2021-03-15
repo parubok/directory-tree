@@ -5,6 +5,9 @@ import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.Objects;
 
+/**
+ * Default implementation of {@link DirNode}. Based on Swing standard {@link DefaultMutableTreeNode}.
+ */
 public class DefaultDirNode extends DefaultMutableTreeNode implements DirNode<DefaultDirNode> {
 
     private final FileSystem fileSystem;
