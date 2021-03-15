@@ -4,6 +4,9 @@ import javax.swing.tree.TreeNode;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 
+/**
+ * @param <T> Type of this node and its children.
+ */
 public interface DirNode<T extends DirNode<T>> extends TreeNode {
 
     static String getName(Path path) {
