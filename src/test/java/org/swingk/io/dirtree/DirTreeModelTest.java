@@ -22,11 +22,10 @@ public class DirTreeModelTest {
         Assertions.assertNotNull(model.getFileSystemNode().getFileSystem());
 
         List<DefaultDirNode> fileSystemRootNodes = new ArrayList<>();
-        for (int i = 0; i < model.getFileSystemNode().getChildCount(); i++) {
-            fileSystemRootNodes.add(model.getFileSystemNode().getChildAt(i));
+        for (int i = 0; i < model.getChildCount(model.getFileSystemNode()); i++) {
+            fileSystemRootNodes.add(model.getChild(model.getFileSystemNode(), i));
         }
         Assertions.assertFalse(fileSystemRootNodes.isEmpty());
-        Assertions.assertEquals(fileSystemRootNodes.size(), model.getChildCount(model.getFileSystemNode()));
         for (DefaultDirNode fileSystemRootNode : fileSystemRootNodes) {
             Assertions.assertEquals(0, fileSystemRootNode.getDirectory().getNameCount());
         }
