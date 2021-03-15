@@ -3,6 +3,12 @@ package org.swingk.io.dirtree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import javax.swing.tree.TreePath;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 public class DirTreeModelTest {
     @Test
     public void basicTest() {
@@ -15,18 +21,21 @@ public class DirTreeModelTest {
         Assertions.assertNull(model.getFileSystemNode().getDirectory());
         Assertions.assertNotNull(model.getFileSystemNode().getFileSystem());
 
-//        List<DefaultDirNode> fileSystemRootNodes = model.getFileSystemRootNodes();
-//        Assertions.assertFalse(fileSystemRootNodes.isEmpty());
-//        Assertions.assertEquals(fileSystemRootNodes.size(), model.getChildCount(model.getFileSystemNode()));
-//        for (DefaultDirNode fileSystemRootNode : fileSystemRootNodes) {
-//            Assertions.assertEquals(0, fileSystemRootNode.getDirectory().getNameCount());
-//        }
+        List<DefaultDirNode> fileSystemRootNodes = new ArrayList<>();
+        for (int i = 0; i < model.getFileSystemNode().getChildCount(); i++) {
+            fileSystemRootNodes.add(model.getFileSystemNode().getChildAt(i));
+        }
+        Assertions.assertFalse(fileSystemRootNodes.isEmpty());
+        Assertions.assertEquals(fileSystemRootNodes.size(), model.getChildCount(model.getFileSystemNode()));
+        for (DefaultDirNode fileSystemRootNode : fileSystemRootNodes) {
+            Assertions.assertEquals(0, fileSystemRootNode.getDirectory().getNameCount());
+        }
 
-//        Path fileSystemRoot0 = fileSystemRootNodes.get(0).getDirectory();
-//        Assertions.assertNotNull(fileSystemRoot0);
-//        Optional<TreePath> p = model.getTreePath(fileSystemRoot0);
-//        Assertions.assertTrue(p.isPresent());
-//        Assertions.assertEquals(new TreePath(new Object[]{model.getRoot(), model.getFileSystemNode(),
-//                fileSystemRootNodes.get(0)}), p.get());
+        Path fileSystemRoot0 = fileSystemRootNodes.get(0).getDirectory();
+        Assertions.assertNotNull(fileSystemRoot0);
+        Optional<TreePath> p = model.getTreePath(fileSystemRoot0);
+        Assertions.assertTrue(p.isPresent());
+        Assertions.assertEquals(new TreePath(new Object[]{model.getRoot(), model.getFileSystemNode(),
+                fileSystemRootNodes.get(0)}), p.get());
     }
 }
