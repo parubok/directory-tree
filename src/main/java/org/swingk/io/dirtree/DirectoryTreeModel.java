@@ -15,10 +15,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Tree model populated with a hierarchy of directories in the local filesystem.
@@ -44,12 +45,12 @@ public class DirectoryTreeModel implements TreeModel {
         private boolean showSystem;
 
         public Builder setNodeFactory(DirectoryNodeFactory nodeFactory) {
-            this.nodeFactory = Objects.requireNonNull(nodeFactory);
+            this.nodeFactory = requireNonNull(nodeFactory);
             return this;
         }
 
         public Builder setPathComparator(Comparator<Path> pathComparator) {
-            this.pathComparator = Objects.requireNonNull(pathComparator);
+            this.pathComparator = requireNonNull(pathComparator);
             return this;
         }
 
@@ -82,10 +83,15 @@ public class DirectoryTreeModel implements TreeModel {
     private final Map<DirectoryNode, Boolean> leafStatus = new ConcurrentHashMap<>();
     private final Set<DirectoryNode> populated = ConcurrentHashMap.newKeySet();
 
+    /**
+     * Constructor.
+     *
+     * @see DirectoryTreeModel#builder()
+     */
     public DirectoryTreeModel(Comparator<Path> pathComparator, boolean showHidden, boolean showSystem,
                               DirectoryNodeFactory nodeFactory) {
-        this.nodeFactory = nodeFactory;
-        this.pathComparator = pathComparator;
+        this.nodeFactory = requireNonNull(nodeFactory);
+        this.pathComparator = requireNonNull(pathComparator);
         this.root = nodeFactory.createRootNode();
 
         this.filter = path -> {
@@ -114,10 +120,17 @@ public class DirectoryTreeModel implements TreeModel {
         populated.add(fsNode);
     }
 
+    /**
+     * @return Filesystem node. Created via to call to {@link DirectoryNodeFactory#createFileSystemNode(FileSystem)}.
+     */
     public DirectoryNode getFileSystemNode() {
         return root.getChildAt(0);
     }
 
+    /**
+     * @return Nodes which correspond to {@link FileSystem#getRootDirectories()}. They are child nodes of the model
+     * root node.
+     */
     public List<DirectoryNode> getFileSystemRootNodes() {
         return getFileSystemNode().getChildren();
     }
@@ -139,7 +152,7 @@ public class DirectoryTreeModel implements TreeModel {
      * directory is not in the model (e.g. doesn't exist, doesn't pass the filter, etc.).
      */
     public Optional<TreePath> getTreePath(Path directory) {
-        Objects.requireNonNull(directory);
+        requireNonNull(directory);
         if (!directory.isAbsolute()) {
             throw new IllegalArgumentException("The directory path must be absolute.");
         }
@@ -178,6 +191,9 @@ public class DirectoryTreeModel implements TreeModel {
         return Optional.empty();
     }
 
+    /**
+     * @return Model root node. Created via to call to {@link DirectoryNodeFactory#createRootNode()}.
+     */
     @Override
     public DirectoryNode getRoot() {
         return root;
