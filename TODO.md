@@ -1,4 +1,4 @@
-- immutable nodes
 - logging
 - error reporting
 - icons
+- jtree
