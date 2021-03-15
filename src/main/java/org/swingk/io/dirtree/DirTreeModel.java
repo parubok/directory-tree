@@ -23,73 +23,38 @@ import static java.util.Objects.requireNonNull;
 
 /**
  * Tree model populated with a hierarchy of directories in the local filesystem.
- * Instances of the model may be created via public constructor or via builder.
- * <p>
- * All nodes of the model are instances of {@link DirectoryNode}.
  *
+ * @param <T> Type of nodes in this model.
  * @implNote The model is populated incrementally, as the user expands the tree nodes.
- * @see DirectoryNodeFactory
+ * @see DirNodeFactory
  */
-public class DirectoryTreeModel implements TreeModel {
+public class DirTreeModel<T extends DirNode<T>> implements TreeModel {
 
     /**
      * Default comparator - compares directory names in case insensitive fashion.
      */
     public static final Comparator<Path> NAME_COMPARATOR = Comparator
-            .comparing(path -> DirectoryNode.getName(path).toLowerCase());
+            .comparing(path -> DirNode.getName(path).toLowerCase());
 
-    public static class Builder {
-        private DirectoryNodeFactory nodeFactory = new DefaultNodeFactory();
-        private Comparator<Path> pathComparator = NAME_COMPARATOR;
-        private boolean showHidden;
-        private boolean showSystem;
-
-        public Builder setNodeFactory(DirectoryNodeFactory nodeFactory) {
-            this.nodeFactory = requireNonNull(nodeFactory);
-            return this;
-        }
-
-        public Builder setPathComparator(Comparator<Path> pathComparator) {
-            this.pathComparator = requireNonNull(pathComparator);
-            return this;
-        }
-
-        public Builder setShowHidden(boolean showHidden) {
-            this.showHidden = showHidden;
-            return this;
-        }
-
-        public Builder setShowSystem(boolean showSystem) {
-            this.showSystem = showSystem;
-            return this;
-        }
-
-        public DirectoryTreeModel build() {
-            return new DirectoryTreeModel(pathComparator, showHidden, showSystem, nodeFactory);
-        }
-    }
-
-    /**
-     * @return New builder to build instance of {@link DirectoryTreeModel}.
-     */
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    private final DirectoryNodeFactory nodeFactory;
-    private final DirectoryNode root;
+    private final DirNodeFactory<T> nodeFactory;
+    private final T root;
     private final DirectoryStream.Filter<Path> filter;
     private final Comparator<Path> pathComparator;
-    private final Map<DirectoryNode, Boolean> leafStatus = new ConcurrentHashMap<>();
-    private final Set<DirectoryNode> populated = ConcurrentHashMap.newKeySet();
+    private final Map<T, Boolean> leafStatus = new ConcurrentHashMap<>();
+    private final Set<T> populated = ConcurrentHashMap.newKeySet();
 
     /**
      * Constructor.
-     *
-     * @see DirectoryTreeModel#builder()
      */
-    public DirectoryTreeModel(Comparator<Path> pathComparator, boolean showHidden, boolean showSystem,
-                              DirectoryNodeFactory nodeFactory) {
+    public DirTreeModel(DirNodeFactory<T> nodeFactory) {
+        this(NAME_COMPARATOR, false, false, nodeFactory);
+    }
+
+    /**
+     * Constructor.
+     */
+    public DirTreeModel(Comparator<Path> pathComparator, boolean showHidden, boolean showSystem,
+                        DirNodeFactory<T> nodeFactory) {
         this.nodeFactory = requireNonNull(nodeFactory);
         this.pathComparator = requireNonNull(pathComparator);
         this.root = nodeFactory.createRootNode();
@@ -121,9 +86,9 @@ public class DirectoryTreeModel implements TreeModel {
     }
 
     /**
-     * @return Filesystem node. Created via to call to {@link DirectoryNodeFactory#createFileSystemNode(FileSystem)}.
+     * @return Filesystem node. Created via to call to {@link DirNodeFactory#createFileSystemNode(FileSystem)}.
      */
-    public DirectoryNode getFileSystemNode() {
+    public T getFileSystemNode() {
         return root.getChildAt(0);
     }
 
@@ -131,7 +96,7 @@ public class DirectoryTreeModel implements TreeModel {
      * @return Nodes which correspond to {@link FileSystem#getRootDirectories()}. They are child nodes of the model
      * root node.
      */
-    public List<DirectoryNode> getFileSystemRootNodes() {
+    public List<T> getFileSystemRootNodes() {
         return getFileSystemNode().getChildren();
     }
 
@@ -165,14 +130,14 @@ public class DirectoryTreeModel implements TreeModel {
         }
         final List<Path> parents = getAllParents(directory);
         final int size = parents.size();
-        List<DirectoryNode> treePathNodes = new ArrayList<>(size + 2);
+        List<T> treePathNodes = new ArrayList<>(size + 2);
         treePathNodes.add(getRoot());
         treePathNodes.add(getFileSystemNode());
-        DirectoryNode currentNode = getFileSystemNode();  // start with filesystem node
+        T currentNode = getFileSystemNode();  // start with filesystem node
         for (int i = 0; i < size; i++) {
-            DirectoryNode node = null;
+            T node = null;
             for (int j = 0; j < currentNode.getChildCount(); j++) {
-                DirectoryNode childNode = currentNode.getChildAt(j);
+                T childNode = currentNode.getChildAt(j);
                 if (childNode.getDirectory().equals(parents.get(i))) {
                     node = childNode;
                     break;
@@ -192,16 +157,16 @@ public class DirectoryTreeModel implements TreeModel {
     }
 
     /**
-     * @return Model root node. Created via to call to {@link DirectoryNodeFactory#createRootNode()}.
+     * @return Model root node. Created via to call to {@link DirNodeFactory#createRootNode()}.
      */
     @Override
-    public DirectoryNode getRoot() {
+    public T getRoot() {
         return root;
     }
 
     @Override
-    public DirectoryNode getChild(Object parent, int index) {
-        DirectoryNode dirNode = (DirectoryNode) parent;
+    public T getChild(Object parent, int index) {
+        T dirNode = (T) parent;
         ensurePopulated(dirNode);
         return dirNode.getChildAt(index);
     }
@@ -210,7 +175,7 @@ public class DirectoryTreeModel implements TreeModel {
         return Files.newDirectoryStream(dir, filter);
     }
 
-    private void ensurePopulated(DirectoryNode node) {
+    private void ensurePopulated(T node) {
         if (!populated.contains(node)) {
             Path dir = node.getDirectory();
             List<Path> children;
@@ -229,7 +194,7 @@ public class DirectoryTreeModel implements TreeModel {
 
     @Override
     public int getChildCount(Object parent) {
-        DirectoryNode dirNode = (DirectoryNode) parent;
+        T dirNode = (T) parent;
         if (Boolean.TRUE.equals(leafStatus.get(dirNode))) {
             return 0;
         }
@@ -237,7 +202,7 @@ public class DirectoryTreeModel implements TreeModel {
         return dirNode.getChildCount();
     }
 
-    private boolean computeLeafStatus(DirectoryNode node) {
+    private boolean computeLeafStatus(T node) {
         boolean leaf;
         try (DirectoryStream<Path> dirStream = newDirectoryStream(node.getDirectory())) {
             leaf = !dirStream.iterator().hasNext();
@@ -249,15 +214,15 @@ public class DirectoryTreeModel implements TreeModel {
 
     @Override
     public boolean isLeaf(Object node) {
-        DirectoryNode dirNode = (DirectoryNode) node;
+        T dirNode = (T) node;
         return leafStatus.computeIfAbsent(dirNode, this::computeLeafStatus);
     }
 
     @Override
     public int getIndexOfChild(Object parent, Object child) {
-        DirectoryNode dirNode = (DirectoryNode) parent;
+        T dirNode = (T) parent;
         ensurePopulated(dirNode);
-        return dirNode.getIndex((DirectoryNode) child);
+        return dirNode.getIndex((T) child);
     }
 
     @Override

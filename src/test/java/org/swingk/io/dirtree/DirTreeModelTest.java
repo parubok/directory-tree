@@ -8,10 +8,10 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
-public class DirectoryTreeModelTest {
+public class DirTreeModelTest {
     @Test
     public void basicTest() {
-        DirectoryTreeModel model = DirectoryTreeModel.builder().build();
+        DirTreeModel<DefaultDirNode> model = new DirTreeModel<>(new DefaultNodeFactory());
         Assertions.assertNotNull(model.getRoot());
         Assertions.assertNull(model.getRoot().getDirectory());
         Assertions.assertNull(model.getRoot().getFileSystem());
@@ -20,10 +20,10 @@ public class DirectoryTreeModelTest {
         Assertions.assertNull(model.getFileSystemNode().getDirectory());
         Assertions.assertNotNull(model.getFileSystemNode().getFileSystem());
 
-        List<DirectoryNode> fileSystemRootNodes = model.getFileSystemRootNodes();
+        List<DefaultDirNode> fileSystemRootNodes = model.getFileSystemRootNodes();
         Assertions.assertFalse(fileSystemRootNodes.isEmpty());
         Assertions.assertEquals(fileSystemRootNodes.size(), model.getChildCount(model.getFileSystemNode()));
-        for (DirectoryNode fileSystemRootNode : fileSystemRootNodes) {
+        for (DefaultDirNode fileSystemRootNode : fileSystemRootNodes) {
             Assertions.assertEquals(0, fileSystemRootNode.getDirectory().getNameCount());
         }
 

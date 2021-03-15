@@ -3,19 +3,19 @@ package org.swingk.io.dirtree;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 
-public class DefaultNodeFactory implements DirectoryNodeFactory {
+public class DefaultNodeFactory implements DirNodeFactory<DefaultDirNode> {
     @Override
-    public DirectoryNode createRootNode() {
-        return new DirectoryNode();
+    public DefaultDirNode createRootNode() {
+        return new DefaultDirNode();
     }
 
     @Override
-    public DirectoryNode createFileSystemNode(FileSystem fs) {
-        return new DirectoryNode(fs);
+    public DefaultDirNode createFileSystemNode(FileSystem fs) {
+        return new DefaultDirNode(fs);
     }
 
     @Override
-    public DirectoryNode createDirectoryNode(Path dir) {
-        return new DirectoryNode(dir);
+    public DefaultDirNode createDirectoryNode(Path dir) {
+        return new DefaultDirNode(dir);
     }
 }
