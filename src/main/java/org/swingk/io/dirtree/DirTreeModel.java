@@ -92,6 +92,13 @@ public class DirTreeModel<T extends DirNode<T>> implements TreeModel {
         return root.getChildAt(0);
     }
 
+    /**
+     * @see #getFileSystemNode()
+     */
+    public TreePath getFileSystemNodeTreePath() {
+        return new TreePath(new Object[]{root, root.getChildAt(0)});
+    }
+
     private static List<Path> getAllParents(Path directory) {
         List<Path> parents = new ArrayList<>();
         Path parent = directory;

@@ -2,6 +2,7 @@ package org.swingk.io.dirtree.demo;
 
 import org.swingk.io.dirtree.DefaultNodeFactory;
 import org.swingk.io.dirtree.DirTreeModel;
+import org.swingk.io.dirtree.DirTreeUtils;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -18,7 +19,7 @@ public class Demo {
         contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         JTree tree = new JTree();
-        tree.setModel(new DirTreeModel<>(new DefaultNodeFactory()));
+        DirTreeUtils.configureTree(tree, new DirTreeModel<>(new DefaultNodeFactory()));
         JScrollPane sp = new JScrollPane();
         sp.setViewportView(tree);
         contentPanel.add(sp, BorderLayout.CENTER);
