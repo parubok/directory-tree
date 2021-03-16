@@ -52,6 +52,11 @@ public class DirTreeModel<T extends DirNode<T>> implements TreeModel {
 
     /**
      * Constructor.
+     *
+     * @param pathComparator The model nodes will be ordered according to the comparator. See {@link #NAME_COMPARATOR}.
+     * @param showHidden See {@link DosFileAttributes#isHidden()}.
+     * @param showSystem See {@link DosFileAttributes#isSystem()}.
+     * @param nodeFactory Factory to create nodes of the model.
      */
     public DirTreeModel(Comparator<Path> pathComparator, boolean showHidden, boolean showSystem,
                         DirNodeFactory<T> nodeFactory) {
