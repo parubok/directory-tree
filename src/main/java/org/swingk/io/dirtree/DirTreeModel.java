@@ -77,6 +77,7 @@ public class DirTreeModel<T extends DirNode<T>> implements TreeModel {
         root.add(fsNode);
         var rootDirs = new ArrayList<Path>();
         fs.getRootDirectories().forEach(rootDirs::add);
+        assert !rootDirs.isEmpty();
         rootDirs.sort(pathComparator);
         rootDirs.forEach(rootDir -> fsNode.add(nodeFactory.createDirectoryNode(rootDir)));
         leafStatus.put(root, Boolean.FALSE);
