@@ -1,5 +1,0 @@
-- better demo
-- logging
-- error reporting
-- icons
-- jtree
