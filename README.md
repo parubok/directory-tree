@@ -18,7 +18,7 @@ import org.swingk.io.dirtree.DirTreeUtils;
 import javax.swing.JTree;
 
 var model = new DirTreeModel<>(DirTreeUtils.NAME_COMPARATOR, true, true, new DefaultNodeFactory());
-JTree tree = ...;
+JTree tree = new JTree();
 DirTreeUtils.configureTree(tree, model);
 ```
 
