@@ -82,7 +82,7 @@ public class DirTreeModel<T extends DirNode<T>> implements TreeModel {
         fs.getRootDirectories().forEach(rootDirs::add);
         assert !rootDirs.isEmpty();
         rootDirs.sort(pathComparator);
-        rootDirs.forEach(rootDir -> fsNode.add(nodeFactory.createDirectoryNode(rootDir)));
+        rootDirs.forEach(rootDir -> fsNode.add(nodeFactory.createDirectoryNode(rootDir, true)));
         leafStatus.put(root, Boolean.FALSE);
         populated.add(root);
         leafStatus.put(fsNode, rootDirs.isEmpty());
@@ -193,7 +193,7 @@ public class DirTreeModel<T extends DirNode<T>> implements TreeModel {
                 children = Collections.emptyList();
             }
             leafStatus.put(node, children.isEmpty());
-            children.forEach(childPath -> node.add(nodeFactory.createDirectoryNode(childPath)));
+            children.forEach(childPath -> node.add(nodeFactory.createDirectoryNode(childPath, false)));
             populated.add(node);
         }
     }

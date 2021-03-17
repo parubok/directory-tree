@@ -15,7 +15,7 @@ public class DefaultNodeFactory implements DirNodeFactory<DefaultDirNode> {
     }
 
     @Override
-    public DefaultDirNode createDirectoryNode(Path dir) {
-        return new DefaultDirNode(dir);
+    public DefaultDirNode createDirectoryNode(Path directory, boolean filesystemRoot) {
+        return new DefaultDirNode(directory);
     }
 }

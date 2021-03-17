@@ -19,7 +19,9 @@ public interface DirNodeFactory<T extends DirNode<T>> {
     T createFileSystemNode(FileSystem fs);
 
     /**
-     * @return New node that represents a filesystem directory.
+     * @param directory Absolute {@link Path} of a filesystem directory.
+     * @param filesystemRoot {@code true} if the {@link Path} represents filesystem root directory (e.g. 'C:\' on Windows).
+     * @return New node that represents the filesystem directory.
      */
-    T createDirectoryNode(Path dir);
+    T createDirectoryNode(Path directory, boolean filesystemRoot);
 }
