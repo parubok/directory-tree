@@ -32,7 +32,7 @@ public class DefaultDirNode extends DefaultMutableTreeNode implements DirNode<De
         super();
         this.fileSystem = null;
         this.directory = Objects.requireNonNull(directory);
-        this.str = DirNode.getName(getDirectory());
+        this.str = DirTreeUtils.getName(getDirectory());
     }
 
     /**

@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Objects.requireNonNull;
+import static org.swingk.io.dirtree.DirTreeUtils.NAME_COMPARATOR;
 
 /**
  * Tree model populated with a hierarchy of directories in the local filesystem.
@@ -29,12 +30,6 @@ import static java.util.Objects.requireNonNull;
  * @see DirNodeFactory
  */
 public class DirTreeModel<T extends DirNode<T>> implements TreeModel {
-
-    /**
-     * Default comparator - compares directory names in case insensitive fashion.
-     */
-    public static final Comparator<Path> NAME_COMPARATOR = Comparator
-            .comparing(path -> DirNode.getName(path).toLowerCase());
 
     private final DirNodeFactory<T> nodeFactory;
     private final T root;
@@ -55,7 +50,8 @@ public class DirTreeModel<T extends DirNode<T>> implements TreeModel {
     /**
      * Constructor.
      *
-     * @param pathComparator The model nodes will be ordered according to the comparator. See {@link #NAME_COMPARATOR}.
+     * @param pathComparator The model nodes will be ordered according to the comparator.
+     * See {@link DirTreeUtils#NAME_COMPARATOR}.
      * @param showHidden See {@link DosFileAttributes#isHidden()}.
      * @param showSystem See {@link DosFileAttributes#isSystem()}.
      * @param nodeFactory Factory to create nodes of the model.

@@ -11,7 +11,7 @@ import java.util.Optional;
 public class DirTreeModelTest {
     @Test
     public void basicTest() {
-        var model = new DirTreeModel<>(DirTreeModel.NAME_COMPARATOR, true, true, new DefaultNodeFactory());
+        var model = new DirTreeModel<>(DirTreeUtils.NAME_COMPARATOR, true, true, new DefaultNodeFactory());
         Assertions.assertNotNull(model.getRoot());
         Assertions.assertFalse(model.isLeaf(model.getRoot()));
         Assertions.assertNull(model.getRoot().getDirectory());

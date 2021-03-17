@@ -5,14 +5,11 @@ import java.nio.file.FileSystem;
 import java.nio.file.Path;
 
 /**
+ * Node of {@link DirTreeModel}.
+ *
  * @param <T> Type of this node and its children.
  */
 public interface DirNode<T extends DirNode<T>> extends TreeNode {
-
-    static String getName(Path path) {
-        Path fileName = path.getFileName();
-        return fileName != null ? fileName.toString() : path.toString();
-    }
 
     /**
      * @return {@code null} for root or directory nodes.
