@@ -23,10 +23,10 @@ import static java.util.Objects.requireNonNull;
 import static org.swingk.io.dirtree.DirTreeUtils.NAME_COMPARATOR;
 
 /**
- * Tree model populated with a hierarchy of directories in the local filesystem.
+ * Tree model with a hierarchy of directories in the local filesystem.
  *
  * @param <T> Type of nodes in this model.
- * @implNote The model is populated incrementally, as the user expands the tree nodes.
+ * @implNote The model populates itself incrementally, as the user expands the tree nodes.
  * @see DirNodeFactory
  */
 public class DirTreeModel<T extends DirNode<T>> implements TreeModel {
