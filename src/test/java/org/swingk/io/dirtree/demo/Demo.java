@@ -27,7 +27,7 @@ public class Demo {
         JFrame frame = new JFrame("Demo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setContentPane(contentPanel);
-        frame.setSize(1200, 600);
+        frame.setSize(800, 600);
         frame.setLocationByPlatform(true);
         frame.setVisible(true);
     }
