@@ -27,8 +27,9 @@ public class DirTreeModelTest {
             fsRoots.add(model.getChild(model.getFileSystemNode(), i));
         }
         Assertions.assertFalse(fsRoots.isEmpty());
-        for (DefaultDirNode fsRoot : fsRoots) {
-            Assertions.assertEquals(0, fsRoot.getDirectory().getNameCount());
+        for (int i = 0; i < fsRoots.size(); i++) {
+            Assertions.assertEquals(0, fsRoots.get(i).getDirectory().getNameCount());
+            Assertions.assertEquals(i, model.getIndexOfChild(model.getFileSystemNode(), fsRoots.get(i)));
         }
 
         Path fsRoot0 = fsRoots.get(0).getDirectory();
@@ -37,5 +38,8 @@ public class DirTreeModelTest {
         Assertions.assertTrue(p.isPresent());
         Assertions.assertEquals(new TreePath(new Object[]{model.getRoot(), model.getFileSystemNode(),
                 fsRoots.get(0)}), p.get());
+
+        Assertions.assertEquals(new TreePath(new Object[]{model.getRoot(), model.getFileSystemNode()}),
+                model.getFileSystemNodeTreePath());
     }
 }
