@@ -4,12 +4,25 @@
 # directory-tree
 
 The goal of this project is to provide an efficient and convenient implementation of Java Swing JTree model with
-a hierarchy of filesystem directories (e.g. for directory chooser component).
+a hierarchy of a local filesystem directories (e.g. for directory chooser component).
+
+Example:
+```java
+import org.swingk.io.dirtree.DirTreeModel;
+import org.swingk.io.dirtree.DefaultNodeFactory;
+import org.swingk.io.dirtree.DirTreeUtils;
+
+import javax.swing.JTree;
+
+var model = new DirTreeModel<>(DirTreeModel.NAME_COMPARATOR, true, true, new DefaultNodeFactory());
+JTree tree = ...;
+DirTreeUtils.configureTree(tree, model);
+```
 
 A demo application is provided. See `org.swingk.io.dirtree.demo.Demo`.
 
 This library is packaged as a Java 9 module `org.swingk.io.dirtree` (with a single dependency on a system module `java.desktop`).
 
-This project has no dependencies (except JUnit 5, for testing).
+This project has no external dependencies (except JUnit 5, for testing).
 
 Requires Java 11 or later.
