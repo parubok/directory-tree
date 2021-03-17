@@ -45,6 +45,8 @@ public class DirTreeModel<T extends DirNode<T>> implements TreeModel {
 
     /**
      * Constructor.
+     *
+     * @see #DirTreeModel(Comparator, boolean, boolean, DirNodeFactory)
      */
     public DirTreeModel(DirNodeFactory<T> nodeFactory) {
         this(NAME_COMPARATOR, false, false, nodeFactory);
@@ -232,16 +234,16 @@ public class DirTreeModel<T extends DirNode<T>> implements TreeModel {
 
     @Override
     public void valueForPathChanged(TreePath path, Object newValue) {
-
+        // this is read-only model
     }
 
     @Override
     public void addTreeModelListener(TreeModelListener l) {
-
+        // no need to store listener - this model doesn't change for external observer
     }
 
     @Override
     public void removeTreeModelListener(TreeModelListener l) {
-
+        // this model is read-only for external observer
     }
 }
