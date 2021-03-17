@@ -118,6 +118,9 @@ public class DirTreeModel<T extends DirNode<T>> implements TreeModel {
      * @param directory Local filesystem directory. Must be absolute as specified by {@link Path#isAbsolute()}.
      * @return {@link Optional} with the tree path of the specified directory or empty {@link Optional} if the
      * directory is not in the model (e.g. doesn't exist, doesn't pass the filter, etc.).
+     * @implNote A side-effect of this method invocation is that the model populates itself with the nodes required by
+     * the {@link TreePath}. It can be used to build and prepopulate the model on any thread before passing it to
+     * the EDT.
      */
     public Optional<TreePath> getTreePath(Path directory) {
         requireNonNull(directory);
