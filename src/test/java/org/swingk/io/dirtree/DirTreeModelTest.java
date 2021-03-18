@@ -41,5 +41,8 @@ public class DirTreeModelTest {
 
         Assertions.assertEquals(new TreePath(new Object[]{model.getRoot(), model.getFileSystemNode()}),
                 model.getFileSystemNodeTreePath());
+
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> model.getTreePath(Path.of("non_absolute_path_dir_tree")));
     }
 }
