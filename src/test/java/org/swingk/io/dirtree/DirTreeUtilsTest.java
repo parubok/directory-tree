@@ -18,4 +18,10 @@ public class DirTreeUtilsTest {
         paths.sort(DirTreeUtils.NAME_COMPARATOR);
         Assertions.assertEquals(List.of(p2, p1, p4, p3), paths);
     }
+
+    @Test
+    public void getName() {
+        Assertions.assertEquals("m1", DirTreeUtils.getName(Path.of("m1")));
+        Assertions.assertEquals("m1", DirTreeUtils.getName(Path.of("c:\\m1")));
+    }
 }
