@@ -1,7 +1,6 @@
 package org.swingk.io.dirtree;
 
 import javax.swing.tree.TreeNode;
-import java.nio.file.FileSystem;
 import java.nio.file.Path;
 
 /**
@@ -12,17 +11,16 @@ import java.nio.file.Path;
 public interface DirNode<T extends DirNode<T>> extends TreeNode {
 
     /**
-     * @return {@code null} for root or directory nodes.
-     */
-    FileSystem getFileSystem();
-
-    /**
-     * @return {@code null} for root or file system nodes.
+     * @return The directory {@link Path} object for node which represents a filesystem directory,
+     * {@code null} for root or file system nodes.
      */
     Path getDirectory();
 
     @Override
     T getChildAt(int index);
 
+    /**
+     * Adds child to this node.
+     */
     void add(T child);
 }

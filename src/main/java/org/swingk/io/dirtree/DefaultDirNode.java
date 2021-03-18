@@ -46,6 +46,7 @@ public class DefaultDirNode extends DefaultMutableTreeNode implements DirNode<De
      * @return {@link Path} instance that represents the node's directory or {@code null} for root or file system
      * nodes.
      */
+    @Override
     public Path getDirectory() {
         return directory;
     }
