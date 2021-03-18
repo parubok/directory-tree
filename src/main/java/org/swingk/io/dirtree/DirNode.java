@@ -11,7 +11,7 @@ import java.nio.file.Path;
 public interface DirNode<T extends DirNode<T>> extends TreeNode {
 
     /**
-     * @return The directory {@link Path} object for node which represents a filesystem directory,
+     * @return The directory {@link Path} object if the node represents a filesystem directory or
      * {@code null} for root or file system nodes.
      */
     Path getDirectory();
