@@ -1,0 +1,28 @@
+plugins {
+	// Apply the java-library plugin for API and implementation separation.
+	id 'java-library'
+	id 'eclipse'
+	id 'maven'
+}
+group = 'synapticloop'
+archivesBaseName = 'directory-tree'
+description = """Swing based tree layout builder"""
+version = '1.10'
+
+tasks.withType(Javadoc).all { enabled = false }
+
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
+
+repositories {
+	jcenter()
+	mavenCentral()
+	mavenLocal()
+	maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+	// Use JUnit test framework.
+	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+
+}

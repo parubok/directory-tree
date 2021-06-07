@@ -14,25 +14,25 @@ import java.awt.BorderLayout;
 
 public class Demo {
 
-    private Demo() {
-        JPanel contentPanel = new JPanel(new BorderLayout());
-        contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+	private Demo() {
+		JPanel contentPanel = new JPanel(new BorderLayout());
+		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        JTree tree = new JTree();
-        DirTreeUtils.configureTree(tree, new DirTreeModel<>(new DefaultNodeFactory()));
-        JScrollPane sp = new JScrollPane();
-        sp.setViewportView(tree);
-        contentPanel.add(sp, BorderLayout.CENTER);
+		JTree tree = new JTree();
+		DirTreeUtils.configureTree(tree, new DirTreeModel<>(new DefaultNodeFactory()));
+		JScrollPane sp = new JScrollPane();
+		sp.setViewportView(tree);
+		contentPanel.add(sp, BorderLayout.CENTER);
 
-        JFrame frame = new JFrame("Demo");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setContentPane(contentPanel);
-        frame.setSize(800, 600);
-        frame.setLocationByPlatform(true);
-        frame.setVisible(true);
-    }
+		JFrame frame = new JFrame("Demo");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setContentPane(contentPanel);
+		frame.setSize(800, 600);
+		frame.setLocationByPlatform(true);
+		frame.setVisible(true);
+	}
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(Demo::new);
-    }
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(Demo::new);
+	}
 }
