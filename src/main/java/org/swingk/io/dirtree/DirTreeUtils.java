@@ -25,7 +25,6 @@ public class DirTreeUtils {
 	/**
 	 * Does basic configuration for {@link JTree}.
 	 */
-	@SuppressWarnings("exports")
 	public static void configureTree(JTree tree, DirTreeModel<?> model) {
 		tree.clearSelection();
 		tree.setModel(model);

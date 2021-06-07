@@ -9,6 +9,7 @@ import java.util.Objects;
  * Default implementation of {@link DirNode}. Based on {@link DefaultMutableTreeNode}.
  */
 public class DefaultDirNode extends DefaultMutableTreeNode implements DirNode<DefaultDirNode> {
+	private static final long serialVersionUID = 6846359941218168795L;
 	private final FileSystem fileSystem;
 	private final Path directory;
 	private final String str;

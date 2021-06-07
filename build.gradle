@@ -14,7 +14,7 @@ group = 'synapticloopltd'
 archivesBaseName = 'directory-tree'
 description = """Swing based tree layout builder"""
 
-version = '1.10.3'
+version = '1.11'
 
 tasks.withType(Javadoc).all { enabled = false }
 

@@ -107,17 +107,13 @@ public class DirTreeModel<T extends DirNode<T>> implements TreeModel {
 		};
 
 		FileSystem fs = FileSystems.getDefault();
-		var fsNode = nodeFactory.createFileSystemNode(fs);
-		root.add(fsNode);
 		var rootDirs = new ArrayList<Path>();
 		fs.getRootDirectories().forEach(rootDirs::add);
 		assert !rootDirs.isEmpty();
 		rootDirs.sort(pathComparator);
-		rootDirs.forEach(rootDir -> fsNode.add(nodeFactory.createDirectoryNode(rootDir, true)));
+		rootDirs.forEach(rootDir -> root.add(nodeFactory.createDirectoryNode(rootDir, true)));
 		leafStatus.put(root, Boolean.FALSE);
 		populated.add(root);
-		leafStatus.put(fsNode, rootDirs.isEmpty());
-		populated.add(fsNode);
 	}
 
 	/**
@@ -130,7 +126,6 @@ public class DirTreeModel<T extends DirNode<T>> implements TreeModel {
 	/**
 	 * @see #getFileSystemNode()
 	 */
-	@SuppressWarnings("exports")
 	public TreePath getFileSystemNodeTreePath() {
 		return new TreePath(new Object[]{root, root.getChildAt(0)});
 	}
@@ -154,7 +149,6 @@ public class DirTreeModel<T extends DirNode<T>> implements TreeModel {
 	 * the {@link TreePath}. It can be used to build and prepopulate the model on any thread before passing it to
 	 * the EDT.
 	 */
-	@SuppressWarnings("exports")
 	public Optional<TreePath> getTreePath(Path directory) {
 		requireNonNull(directory);
 		if (!directory.isAbsolute()) {
@@ -268,19 +262,16 @@ public class DirTreeModel<T extends DirNode<T>> implements TreeModel {
 		return dirNode.getIndex((T) child);
 	}
 
-	@SuppressWarnings("exports")
 	@Override
 	public void valueForPathChanged(TreePath path, Object newValue) {
 		// this is read-only model
 	}
 
-	@SuppressWarnings("exports")
 	@Override
 	public void addTreeModelListener(TreeModelListener l) {
 		// no need to store listener - this model doesn't change for external observer
 	}
 
-	@SuppressWarnings("exports")
 	@Override
 	public void removeTreeModelListener(TreeModelListener l) {
 		// this model is read-only for external observer
