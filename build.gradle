@@ -3,6 +3,13 @@ plugins {
 	id 'java-library'
 	id 'eclipse'
 	id 'maven'
+
+	id "com.github.ben-manes.versions" version "0.27.0"
+	id 'com.gradle.plugin-publish' version '0.11.0'
+	id 'co.riiid.gradle' version '0.4.2'
+
+	id 'synapticloop.copyrightr' version '1.3.1'
+
 }
 group = 'synapticloop'
 archivesBaseName = 'directory-tree'
@@ -26,4 +33,21 @@ dependencies {
 	// Use JUnit test framework.
 	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
 
+}
+
+
+// RELEASING to various points
+
+github {
+	owner = group
+	repo = archivesBaseName
+	if(System.getenv('GITHUB_TOKEN')) {
+		token = System.getenv('GITHUB_TOKEN')
+	}
+
+	tagName = version
+	name = version
+	assets = [
+		'build/libs/' + archivesBaseName + '-' + version + '.jar',
+	]
 }
