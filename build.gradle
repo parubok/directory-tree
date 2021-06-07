@@ -14,7 +14,7 @@ group = 'synapticloopltd'
 archivesBaseName = 'directory-tree'
 description = """Swing based tree layout builder"""
 
-version = '1.10'
+version = '1.10.1'
 
 tasks.withType(Javadoc).all { enabled = false }
 
@@ -45,7 +45,7 @@ githubRelease {
 	repo = archivesBaseName
 	tagName = version
 
-	overwrite false // by default false; if set to true, will delete an existing release with the same tag and name
+	overwrite true // by default false; if set to true, will delete an existing release with the same tag and name
 	dryRun false // by default false; you can use this to see what actions would be taken without making a release
 	apiEndpoint "https://api.github.com" // should only change for github enterprise users
 }
