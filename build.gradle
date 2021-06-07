@@ -4,13 +4,13 @@ plugins {
 	id 'eclipse'
 	id 'maven'
 
-	id "com.github.ben-manes.versions" version "0.27.0"
-	id 'co.riiid.gradle' version '0.4.2'
+	id "com.github.ben-manes.versions" version "0.39.0"
+	id "com.github.breadmoirai.github-release" version "2.2.12"
 
 	id 'synapticloop.copyrightr' version '1.3.1'
 
 }
-group = 'synapticloop'
+group = 'synapticloopltd'
 archivesBaseName = 'directory-tree'
 description = """Swing based tree layout builder"""
 
@@ -37,16 +37,15 @@ dependencies {
 
 // RELEASING to various points
 
-github {
-	owner = group
-	repo = archivesBaseName
+githubRelease {
 	if(System.getenv('GITHUB_TOKEN')) {
 		token = System.getenv('GITHUB_TOKEN')
 	}
-
+	owner = group
+	repo = archivesBaseName
 	tagName = version
-	name = version
-	assets = [
-		'build/libs/' + archivesBaseName + '-' + version + '.jar',
-	]
+
+	overwrite false // by default false; if set to true, will delete an existing release with the same tag and name
+	dryRun false // by default false; you can use this to see what actions would be taken without making a release
+	apiEndpoint "https://api.github.com" // should only change for github enterprise users
 }
