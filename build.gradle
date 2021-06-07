@@ -7,6 +7,7 @@ plugins {
 group = 'synapticloop'
 archivesBaseName = 'directory-tree'
 description = """Swing based tree layout builder"""
+
 version = '1.10'
 
 tasks.withType(Javadoc).all { enabled = false }
