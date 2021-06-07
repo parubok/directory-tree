@@ -10,6 +10,8 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.DosFileAttributes;
+import java.nio.file.attribute.PosixFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -66,13 +68,40 @@ public class DirTreeModel<T extends DirNode<T>> implements TreeModel {
             if (path.getNameCount() == 0) {
                 return true; // filesystem root always passes the filter
             }
-            DosFileAttributes attrs;
-            try {
+            // we need to determine whether we are on a posix system, else use DOS
+            boolean isPosix = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
+            if(!isPosix) {
+              // DOS related filesystem permission checking
+              DosFileAttributes attrs;
+              try {
                 attrs = Files.readAttributes(path, DosFileAttributes.class);
-            } catch (IOException ex) {
+              } catch (IOException ex) {
                 return false;
-            }
-            return attrs.isDirectory() && (showHidden || !attrs.isHidden()) && (showSystem || !attrs.isSystem());
+              }
+              return attrs.isDirectory() && (showHidden || !attrs.isHidden()) && (showSystem || !attrs.isSystem());
+            } else {
+              // POSIX related filesystem checks (MacOS/*NIX)
+              PosixFileAttributes attrs;
+              try {
+                attrs = Files.readAttributes(path, PosixFileAttributes.class);
+              } catch (IOException ex) {
+                return false;
+              }
+
+              Set<PosixFilePermission> permissions = attrs.permissions();
+
+              return(
+                  attrs.isDirectory() &&
+                  (showHidden || !path.getFileName().toString().startsWith(".")) &&
+                  // now we need to know whether there is read and execute permission on the directory
+                  // for us, our groups, and/or others
+                    (
+                      (permissions.contains(PosixFilePermission.OWNER_READ) && permissions.contains(PosixFilePermission.OWNER_EXECUTE)) || 
+                      (permissions.contains(PosixFilePermission.GROUP_READ) && permissions.contains(PosixFilePermission.GROUP_EXECUTE)) ||
+                      (permissions.contains(PosixFilePermission.OTHERS_READ) && permissions.contains(PosixFilePermission.OTHERS_EXECUTE))
+                    )
+                  );
+          }
         };
 
         FileSystem fs = FileSystems.getDefault();

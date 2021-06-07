@@ -3,6 +3,7 @@ package org.swingk.io.dirtree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,13 @@ public class DirTreeUtilsTest {
     @Test
     public void getName() {
         Assertions.assertEquals("m1", DirTreeUtils.getName(Path.of("m1")));
-        Assertions.assertEquals("m1", DirTreeUtils.getName(Path.of("c:\\m1")));
+        boolean isPosix = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
+        if(isPosix) {
+          // *NIX based
+          Assertions.assertEquals("m1", DirTreeUtils.getName(Path.of("/m1")));
+        } else {
+          // DOS based
+          Assertions.assertEquals("m1", DirTreeUtils.getName(Path.of("c:\\m1")));
+        }
     }
 }
