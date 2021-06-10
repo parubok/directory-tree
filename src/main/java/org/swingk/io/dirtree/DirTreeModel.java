@@ -9,7 +9,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.DosFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -52,8 +51,8 @@ public class DirTreeModel<T extends DirNode<T>> implements TreeModel {
      *
      * @param pathComparator The model nodes will be ordered according to the comparator.
      * See {@link DirTreeUtils#NAME_COMPARATOR}.
-     * @param showHidden See {@link DosFileAttributes#isHidden()}.
-     * @param showSystem See {@link DosFileAttributes#isSystem()}.
+     * @param showHidden Show hidden directories.
+     * @param showSystem Show system directories (ignored for POSIX filesystem).
      * @param nodeFactory Factory to create nodes of the model.
      */
     public DirTreeModel(Comparator<Path> pathComparator, boolean showHidden, boolean showSystem,
@@ -61,21 +60,8 @@ public class DirTreeModel<T extends DirNode<T>> implements TreeModel {
         this.nodeFactory = requireNonNull(nodeFactory);
         this.pathComparator = requireNonNull(pathComparator);
         this.root = nodeFactory.createRootNode();
-
-        this.filter = path -> {
-            if (path.getNameCount() == 0) {
-                return true; // filesystem root always passes the filter
-            }
-            DosFileAttributes attrs;
-            try {
-                attrs = Files.readAttributes(path, DosFileAttributes.class);
-            } catch (IOException ex) {
-                return false;
-            }
-            return attrs.isDirectory() && (showHidden || !attrs.isHidden()) && (showSystem || !attrs.isSystem());
-        };
-
         FileSystem fs = FileSystems.getDefault();
+        this.filter = new DirFilter(fs, showHidden, showSystem);
         var fsNode = nodeFactory.createFileSystemNode(fs);
         root.add(fsNode);
         var rootDirs = new ArrayList<Path>();
