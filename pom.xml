@@ -5,7 +5,7 @@
 
   <groupId>org.swingk.io.dirtree</groupId>
   <artifactId>directory-tree</artifactId>
-  <version>1.10-SNAPSHOT</version>
+  <version>1.10</version>
 
   <name>directory-tree</name>
   <url>https://github.com/parubok/directory-tree</url>
@@ -27,7 +27,7 @@
     <connection>scm:git:git@github.com:parubok/directory-tree</connection>
     <url>scm:git:git@github.com:parubok/directory-tree</url>
     <developerConnection>scm:git:git@github.com:parubok/directory-tree</developerConnection>
-    <tag>HEAD</tag>
+    <tag>v1.10</tag>
   </scm>
 
   <dependencies>
