@@ -54,7 +54,7 @@ final class DirFilter implements DirectoryStream.Filter<Path> {
         }
     }
 
-    private boolean checkPosixPermissions(Set<PosixFilePermission> permissions) {
+    private static boolean checkPosixPermissions(Set<PosixFilePermission> permissions) {
         // now we need to know whether there is read and execute permission on the directory
         // for us, our groups, and/or others
         return (permissions.contains(PosixFilePermission.OWNER_READ) && permissions.contains(PosixFilePermission.OWNER_EXECUTE)) ||
